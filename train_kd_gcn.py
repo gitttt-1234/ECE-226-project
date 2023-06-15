@@ -6,6 +6,7 @@ import torch.nn as nn
 from model.GIN import GIN_dict
 from model.GCN import GCN_dict
 from model.GAT import GAT_dict
+from model.GraphSAGE import GraphSAGE_dict
 from Temp.dataset import GINDataset
 from Temp.fake_dataset import FAKEGINDataset
 from utils.GIN.data_loader import GraphDataLoader, collate
@@ -82,7 +83,7 @@ def task_model(args, dataset, path):
 
     #  step 1: prepare model
     assert args.tmodel in ['GIN', 'GCN']
-    assert args.smodel in ['GIN', 'GCN','GAT']
+    assert args.smodel in ['GIN', 'GCN','GAT','GS']
     
     if args.tmodel == 'GIN':
         modelt = GIN_dict[args.modelt](dataset)
@@ -102,6 +103,8 @@ def task_model(args, dataset, path):
         models = GCN_dict[args.models](dataset)
     elif args.smodel == 'GAT':
         models = GAT_dict[args.models](dataset)
+    elif args.smodel == 'GS':
+        models = GraphSAGE_dict[args.models](dataset)
     else:
         raise('Not supporting such model!')
 
@@ -278,13 +281,13 @@ if __name__ == '__main__':
     
     parser.add_argument("--modelt", type=str, default='GIN5_64', 
                         choices=['GIN5_64', 'GIN5_32', 'GIN3_64', 'GIN3_32', 'GIN2_64', 'GIN2_32', 
-                                 'GCN5_64', 'GCN5_32', 'GCN3_64', 'GCN3_32', 'GCN2_64', 'GCN2_32'],help='graph models')
+                                 'GCN5_64', 'GCN5_32', 'GCN3_64', 'GCN3_32', 'GCN2_64', 'GCN2_32','GS'],help='graph models')
 
     parser.add_argument("--smodel", type=str, default='GIN', choices=['GIN', 'GCN','GAT'], help='graph models')
     
     parser.add_argument("--models", type=str, default='GIN5_64', 
                         choices=['GIN5_64', 'GIN5_32', 'GIN3_64', 'GIN3_32', 'GIN2_64', 'GIN2_32', 
-                                 'GCN5_64', 'GCN5_32', 'GCN3_64', 'GCN3_32', 'GCN2_64', 'GCN2_32','GAT_3_64','GAT2','GAT_4_64'],help='graph models')
+                                 'GCN5_64', 'GCN5_32', 'GCN3_64', 'GCN3_32', 'GCN2_64', 'GCN2_32','GAT_3_32','GAT2','GAT_4_32','GS'],help='graph models')
 
     
     parser.add_argument('--path_t', type=str, default=None, help='teacher model snapshot')
